@@ -1,8 +1,8 @@
 import React from 'react';
 
-const DateTime = ({changeTimer}) => {
+const DateTime = ({changeTimer, value}) => {
     return (
-        <input type="datetime-local" onChange={changeTimer}/>
+        <input type="datetime-local" onChange={changeTimer} value={value}/>
     );
 };
 
