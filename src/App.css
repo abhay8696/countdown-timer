@@ -10,6 +10,7 @@
   justify-content: center;
   gap: 1rem;
   color: white;
+  font-size: 4rem;
 }
 
 h1{
@@ -27,6 +28,7 @@ input, button{
   color: white;
   cursor: pointer;
   transition: 250ms all;
+  font-size: 16px !important;
 }
 button:hover{
   color: #ac07fe;
@@ -37,6 +39,26 @@ button:hover{
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2rem;
+  padding: 0 1rem;
+}
+
+@media only screen and (max-width: 900px) {
+  .App{
+    font-size: 3rem;
+  }
+  h1{
+    font-size: 3rem;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .App{
+    font-size: 3rem;
+  }
+  h1{
+    font-size: 2.5rem;
+  }
 }
