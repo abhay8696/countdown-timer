@@ -25,12 +25,23 @@ function App() {
   }
 
   const convertTimestamp = timestamp => {
+    if(timestamp <= 0){
+      setTimerON(prev => !prev);
+      return setTimeObject({days: 0, hours: 0, minutes: 0, seconds: 0});
+    }
+
     const seconds = Math.floor(timestamp / 1000);
     const minutes = Math.floor(seconds / 60) ;
     const hours = Math.floor(minutes / 60) ;
     const days = Math.floor(hours / 24);
 
-    setTimeObject({days: days, hours: hours%24, minutes: minutes%60, seconds: seconds%60});
+    //validations
+    if(days > 99) {
+      setTimerON(prev => !prev);
+      return setTimeObject({days: 0, hours: 0, minutes: 0, seconds: 0});
+    }
+
+    return setTimeObject({days: days, hours: hours%24, minutes: minutes%60, seconds: seconds%60});
   }
 
   //lifecycle
@@ -49,14 +60,16 @@ function App() {
 
 
   return (
-    <div>
-      <h1>Countdown Timer</h1>
+    <div className='App'>
+      <h1>Countdown <span className='timerWord'>Timer</span></h1>
       <DateTime changeTimer={changeTimer} value={targetTime}/>
       <Button toggleButton={toggleButton} timerON={timerON}/>
-      <Card value={timeObject.days} type={"Days"}/>
-      <Card value={timeObject.hours} type={"Hours"}/>
-      <Card value={timeObject.minutes} type={"Minutes"}/>
-      <Card value={timeObject.seconds} type={"Seconds"}/>
+      <section className='cardsSection'>
+        <Card value={timeObject.days} type={"Days"}/>
+        <Card value={timeObject.hours} type={"Hours"}/>
+        <Card value={timeObject.minutes} type={"Minutes"}/>
+        <Card value={timeObject.seconds} type={"Seconds"}/>
+      </section>
     </div>
   )
 }

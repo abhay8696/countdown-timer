@@ -1,10 +1,11 @@
 import React from 'react';
+import "./card.css"
 
 const Card = ({value, type}) => {
     return (
-        <div>
-            <h2>{value}</h2>
-            <h3>{type}</h3>
+        <div className='card'>
+            <span className='cardValue'>{value}</span>
+            <span className='cardText'>{type}</span>
         </div>
     );
 };
