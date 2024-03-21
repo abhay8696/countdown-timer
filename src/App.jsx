@@ -22,20 +22,32 @@ function App() {
   const changeTimer = event => {
     setUserMessage({timeUp: false, error: false, message: ""});
     setTargetTime(event.target.value);
+
+    //save target time to local storage
+    window.localStorage.setItem("targetTime", event.target.value);
   }
 
   const toggleButton = ()=> setTimerON(prev => !prev);
 
-  const startInterVal = () => {
-    const difference = new Date(targetTime) - new Date();
+  //start interval for every 1 sec
+  const startInterVal = (target) => {
 
-    if(difference < 0) {
-      return setUserMessage({timeUp: false, error: true, message: "Date/Time is in the past"});
-    }
-
-    return setInterval(()=> {
-      convertTimestamp({ targetTime, setTimerON, setUserMessage, setTimeObject });
+    console.log(target)
+    let inter = setInterval(()=> {
+      convertTimestamp({ targetTime: target, setTimerON, setUserMessage, setTimeObject });
     }, 1000)
+
+    setRunInterval(inter);
+  }
+
+  //check local storage for existing timer
+  const checkForExistingTimer = () => {
+    let doesExist = window.localStorage.getItem("targetTime");
+    
+    if(doesExist) {
+      setTargetTime(doesExist);
+      setTimerON(true);
+    }
   }
 
   // const playSound = () => {
@@ -44,15 +56,28 @@ function App() {
 
   //lifecycle
   useEffect(()=> {
-    if(timerON) setRunInterval(startInterVal());
-    if(!timerON){startInterVal
+    checkForExistingTimer();
+    if(runInterval) return clearInterval(runInterval);
+  }, [])
+
+  useEffect(()=> {
+    if(timerON) {
+      const difference = new Date(targetTime) - new Date();
+  
+      if(difference < 0) {
+        return setUserMessage({timeUp: false, error: true, message: "Date/Time is in the past"});
+      }
+  
+
+      startInterVal(targetTime);
+    }
+    if(!timerON){
       setRunInterval(previousInterval => {
         clearInterval(previousInterval);
         return null;
       });
       setTimeObject({days: 0, hours: 0, minutes: 0, seconds: 0});
     }
-    return clearInterval(runInterval);
   }, [timerON])
 
   //play sound when time is up
