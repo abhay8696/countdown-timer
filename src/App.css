@@ -30,6 +30,10 @@ input, button{
   transition: 250ms all;
   font-size: 16px !important;
 }
+.inputErr{
+  border-color: red;
+  color: red !important;
+}
 button:hover{
   color: #ac07fe;
   border-color: #ac07fe;
@@ -43,6 +47,12 @@ button:hover{
   gap: 1rem;
   margin-top: 2rem;
   padding: 0 1rem;
+}
+
+.userMessage{
+  font-size: 1rem !important;
+  font-weight: 600;
+  color: #ac07fe;
 }
 
 @media only screen and (max-width: 900px) {

@@ -1,53 +1,51 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+//styles
 import './App.css'
-import Card from './components/Card'
+//components
 import DateTime from './components/DateTime'
 import Button from './components/Button'
+import CardSection from './components/CardsSection'
+//helper functions
+import { convertTimestamp } from './helperFunctions/convertTime'
+import audioFile from "./assets/audio.mp3"
 
 function App() {
   const [timerON, setTimerON] = useState(false);
   const [targetTime, setTargetTime] = useState("2024-03-20T02:00");
   const [runInterval, setRunInterval] = useState(null);
   const [timeObject, setTimeObject] = useState({days: 0, hours: 0, minutes: 0, seconds: 0});
+  const [userMessage, setUserMessage] = useState({timeUp: false, error: false, message: "" });
+  const sound = useRef(new Audio(audioFile));
 
 
   //functions
   const changeTimer = event => {
+    setUserMessage({timeUp: false, error: false, message: ""});
     setTargetTime(event.target.value);
   }
 
   const toggleButton = ()=> setTimerON(prev => !prev);
 
   const startInterVal = () => {
+    const difference = new Date(targetTime) - new Date();
+
+    if(difference < 0) {
+      return setUserMessage({timeUp: false, error: true, message: "Date/Time is in the past"});
+    }
+
     return setInterval(()=> {
-      convertTimestamp(new Date(targetTime) - new Date())
+      convertTimestamp({ targetTime, setTimerON, setUserMessage, setTimeObject });
     }, 1000)
   }
 
-  const convertTimestamp = timestamp => {
-    if(timestamp <= 0){
-      setTimerON(prev => !prev);
-      return setTimeObject({days: 0, hours: 0, minutes: 0, seconds: 0});
-    }
-
-    const seconds = Math.floor(timestamp / 1000);
-    const minutes = Math.floor(seconds / 60) ;
-    const hours = Math.floor(minutes / 60) ;
-    const days = Math.floor(hours / 24);
-
-    //validations
-    if(days > 99) {
-      setTimerON(prev => !prev);
-      return setTimeObject({days: 0, hours: 0, minutes: 0, seconds: 0});
-    }
-
-    return setTimeObject({days: days, hours: hours%24, minutes: minutes%60, seconds: seconds%60});
-  }
+  // const playSound = () => {
+  //   return .play();
+  // }
 
   //lifecycle
   useEffect(()=> {
     if(timerON) setRunInterval(startInterVal());
-    if(!timerON){
+    if(!timerON){startInterVal
       setRunInterval(previousInterval => {
         clearInterval(previousInterval);
         return null;
@@ -57,19 +55,25 @@ function App() {
     return clearInterval(runInterval);
   }, [timerON])
 
-
+  //play sound when time is up
+  useEffect(()=> {
+    if(userMessage?.timeUp){
+      sound.current.play()
+    }
+    else sound.current.pause();
+  }, [userMessage])
 
   return (
     <div className='App'>
       <h1>Countdown <span className='timerWord'>Timer</span></h1>
-      <DateTime changeTimer={changeTimer} value={targetTime}/>
+      <DateTime changeTimer={changeTimer} value={targetTime} inputErr={userMessage.error}/>
       <Button toggleButton={toggleButton} timerON={timerON}/>
-      <section className='cardsSection'>
-        <Card value={timeObject.days} type={"Days"}/>
-        <Card value={timeObject.hours} type={"Hours"}/>
-        <Card value={timeObject.minutes} type={"Minutes"}/>
-        <Card value={timeObject.seconds} type={"Seconds"}/>
-      </section>
+      
+      {!userMessage.message.length ? 
+        <CardSection timeObject={timeObject} userMessage={userMessage}/> 
+      : 
+        <p className='userMessage'>{userMessage.message}</p>
+      }
     </div>
   )
 }
